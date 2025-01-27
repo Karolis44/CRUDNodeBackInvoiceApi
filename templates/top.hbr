@@ -23,7 +23,7 @@
  {{/if}}
 
        <section class="buttons">
-        <h1> Professional Invoice Generator {{invclistData.part3}}</h1>
+        <h1> Invoice Generator {{invclistData.part3}}</h1>
 
         
          
