@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{URL}}style.css">
+    <link rel="stylesheet" href="{{URL}}invstyle.css">
+    <script src="{{URL}}app.js" defer></script>
+
+    <title>{{pageTitle}}</title>
+</head>
+
+<body>
+
+    <header>
+{{#if message}}
+        <div class="alert-container" data-msg>
+                <div class="alert alert-{{message.type}}" role="alert">
+                    {{message.text}}
+                </div>
+        </div>
+ {{/if}}
+
+       <section class="buttons">
+        <h1> Professional Invoice Generator {{invclistData.part3}}</h1>
+
+        
+         
+    
+         </section>
+         
+        {{!-- <form action="{{URL}} admin/top" method="post">
+       
+            
+            <input type="text" value="{{invclistData.part1}}">
+            <textarea class="control" name="pagetext" rows="10">{{invclistData.part2}}</textarea>
+            <button type="submit" class="btnbtn">save</button>
+   
+    </form> --}}
+
+
+    </header>

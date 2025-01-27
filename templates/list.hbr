@@ -1,0 +1,17 @@
+<main>
+<section class="buttons">
+    <section class="list-bin">
+
+        <h1>Sąskaitų sąrašas</h1>
+
+
+      
+        <div>{{invclistData.part1}}</div>
+        <div>{{invclistData.part2}}</div>
+        <div>{{invclistData.part3}}</div>
+
+
+            </section>
+        </section>
+
+      

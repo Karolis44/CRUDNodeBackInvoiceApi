@@ -1,0 +1,16 @@
+
+<main>
+    <section class="buttons">
+        <div class="buttons-bin">
+            
+        <nav>
+            <ul>
+                <li><a href="{{URL}}invnew"> sugeneruoti naują sąskaitą </a></li>
+                <li><a href="{{URL}}invlist">saskaitų sarašas</a></li>
+                <li><a href="{{URL}}refresh"> atnaujinti</a></li>
+            </ul>
+        </nav>
+        </div>
+        
+    </section>
+</main>

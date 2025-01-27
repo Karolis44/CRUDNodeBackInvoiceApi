@@ -1,0 +1,60 @@
+<main>
+    <div class='invoice-container'>
+        <div class='header'>
+            <h1>PVM SĄSKAITA FAKTŪRA</h1>
+            <p>Serija ir numeris: <strong id='invoice-number'>{{invoice.number}}</strong></p>
+            <p>Sąskaitos data: <span id='invoice-date'>{{invoice.date}}</span></p>
+            <p>Apmokėti iki: <span id='invoice-due-date'>{{invoice.due.date}}</span></p>
+        </div>
+        <div class='details'>
+            <div class='section'>
+                <h3>Pardavėjas</h3>
+                <p id='seller-name'>{{seller.name}}</p>
+                <p id='seller-address'>{{seller.address}}</p>
+                <p id='seller-code'>{{seller.code}}</p>
+                <p id='seller-vat'>{{seller.vat}}</p>
+                <p id='seller-phone'>{{seller.phone}}</p>
+                <p id='seller-email'>{{seller.email}}</p>
+            </div>
+            <div class='section'>
+                <h3>Pirkėjas</h3>
+                <p id='buyer-name'>{{buyer.name}}</p>
+                <p id='buyer-address'>{{buyer.address}}</p>
+                <p id='buyer-code'>{{buyer.code}}</p>
+                <p id='buyer-vat'>{{buyer.vat}}</p>
+                <p id='buyer-phone'>{{buyer.phone}}</p>
+                <p id='buyer-email'>{{buyer.email}}</p>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Prekės aprašymas</th>
+                    <th>Kiekis</th>
+                    <th>Vieneto kaina</th>
+                    <th>Nuolaida</th>
+                    <th>Suma</th>
+                </tr>
+            </thead>
+            {{#each items}}
+            <tbody>
+                <td>{{item.description}}</td>
+                <td>{{item.quantity}}</td>
+                <td>{{item.price}}</td>
+                <td>{{item.discount}}</td>
+                <td>{{discounted.price}}</td>
+            </tbody>
+            {{/each}}
+        </table>
+        <div class='totals'>
+            <p>Transportavimo išlaidos: <strong id='shipping-price'>0.00 €</strong>{{shipping.price}}</p>
+            <p>Prekių suma (be PVM): <strong id='subtotal'>0.00 €</strong>{{product.price}}</p>
+            <p>PVM 21%: <strong id='vat'>0.00 €</strong>{{vat.price}}</p>
+            <p>Galutinė suma su PVM: <strong id='total'>0.00 €</strong>{{total.price}}</p>
+        </div>
+    </div>
+    <div class='print-button'>
+        <button onclick='window.print()'>Spausdinti</button>
+    </div>
+
+</main>
