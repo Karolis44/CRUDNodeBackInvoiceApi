@@ -4,13 +4,14 @@ const URL = 'http://localhost:3000/'
 const fs = require('fs');
 const handlebars = require('handlebars');
 const bodyParser = require('body-parser');
-const urlApi = "https://in3.dev/inv/";
+const apiUrl = "https://in3.dev/inv/";
 const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
 const md5 = require('md5');
 
 
-
+let invoices = fs.readFileSync('./data/invoices.json', 'utf8');
+invoices = JSON.parse(invoices);
 
 
 
@@ -44,6 +45,12 @@ const updateSession = (req, prop, data) => {
     fs.writeFileSync('./data/session.json', sessions);
     
 }
+
+
+
+
+
+
 
 // Midleware
 
@@ -104,172 +111,339 @@ app.use(sessionMiddleware);
 app.use(messagesMiddleware);
 
 
-// Routes
 
-// app.get('/admin', (req, res) => {
 
-//     const data = {
-//         pageTitle: 'Sąskaitų generavimas',                           NONO
-//     };
-//     const html = makeHtml(data, 'main');
+// Functions
 
-//     res.send(html);
-// });
+function newInv(newData) {
+    Object.assign(newData, { subTotal: 0, vat: 0, grandTotal: 0, totalDiscounts: 0 });
+
+    newData.items.forEach(item => {
+        if (item.discount.type === 'fixed') {
+            item.discount.Eur = item.discount.value;
+            item.discount.P = (item.discount.value * 100) / (item.price * item.quantity);
+        } else if (item.discount.type === 'percentage') {
+            item.discount.P = item.discount.value;
+            item.discount.Eur = (item.price * item.quantity) * (item.discount.P / 100);
+        } else {
+            item.discount.Eur = 0;
+            item.discount.P = 0;
+        }
+
+        item.itemTotal = item.quantity * item.price;
+        item.itemDiscountedTotal = (item.itemTotal - item.discount.Eur).toFixed(2);
+        newData.subTotal += item.itemTotal;
+        newData.totalDiscounts += item.discount.Eur;
+
+        item.discount.Eur = `-${item.discount.Eur.toFixed(2)}€`;
+        item.discount.P = `(-${item.discount.P.toFixed(2)}%)`;
+    });
+
+    newData.vat = ((newData.subTotal + newData.shippingPrice) * 0.21).toFixed(2);
+    newData.grandTotal = (newData.subTotal - newData.totalDiscounts + newData.shippingPrice + parseFloat(newData.vat)).toFixed(2);
+    
+    newData.subTotal = newData.subTotal.toFixed(2);
+    newData.totalDiscounts = newData.totalDiscounts.toFixed(2);
+    newData.shippingPrice = newData.shippingPrice.toFixed(2);
+
+    fs.writeFileSync('./data/inv-list.json', JSON.stringify(newData), 'utf8');
+}
+
+function editedInv(newData) {
+    Object.assign(newData, { subTotal: 0, vat: 0, grandTotal: 0, totalDiscounts: 0 });
+
+    newData.items.forEach(item => {
+        item.itemTotal = item.quantity * item.price;
+        item.itemDiscountedTotal = (item.itemTotal - parseFloat(item.discount.Eur)).toFixed(2);
+        newData.subTotal += item.itemTotal;
+        newData.totalDiscounts += parseFloat(item.discount.Eur);
+
+        item.discount.Eur = `-${parseFloat(item.discount.Eur).toFixed(2)}€`;
+        item.discount.P = `(-${parseFloat(item.discount.P).toFixed(2)}%)`;
+    });
+
+    newData.vat = ((newData.subTotal + parseFloat(newData.shippingPrice)) * 0.21).toFixed(2);
+    newData.grandTotal = (newData.subTotal - newData.totalDiscounts + parseFloat(newData.shippingPrice) + parseFloat(newData.vat)).toFixed(2);
+    
+    newData.subTotal = newData.subTotal.toFixed(2);
+    newData.totalDiscounts = newData.totalDiscounts.toFixed(2);
+    // newData.shippingPrice = newData.shippingPrice.toFixed(2);
+
+    let invoices = JSON.parse(fs.readFileSync('./data/invoices.json', 'utf8'));
+    invoices.items = invoices.items.filter(inv => inv.number !== newData.number);
+    invoices.items.push(newData);
+
+    fs.writeFileSync('./data/invoices.json', JSON.stringify({ items: invoices.items }), 'utf8');
+}
+
+
+
+
+
+function addItem(newData) {
+   
+    let fileContent = {};
+    const oldData = fs.readFileSync('./data/invoices.json', 'utf8'); 
+    fileContent = oldData ? JSON.parse(oldData) : {}; 
+
+    if (!fileContent.items) {
+        fileContent.items = [];
+    }
+
+    fileContent.items.push(newData);
+
+    fs.writeFileSync('./data/invoices.json', JSON.stringify(fileContent), 'utf8');
+    console.log('New item added successfully!');
+}
+
+
+
+
+
+app.get('/', (req, res) => {
+
+   
+    const data = {
+        pageTitle: 'Pagrindinis puslapis',
+       
+    };
+   
+
+    const html = makeHtml(data, 'main');
+
+    res.send(html);
+});
+
 
 
 
 app.get('/list', (req, res) => {
 
-    let invclistData = fs.readFileSync('./data/inv-list.json', 'utf8');
+    let invclistData = fs.readFileSync('./data/invoices.json', 'utf8');
     invclistData = JSON.parse(invclistData);
 
     const data = {
         pageTitle: 'Sąskaitų sąrašas',
         invclistData,
-        message: req.user.message || null
+        URL,
+        message: req.user.message || null,
+        
     };
+
+    
+
     const html = makeHtml(data, 'list');
 
     res.send(html);
 });
 
-app.get('/admin/top', (req, res) => {
+// Create 
 
-    invclistData = fs.readFileSync('./data/inv-list.json', 'utf8');
+app.get('/new', (req, res) => {
 
+    async function getData() {
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+ 
+            const json = await response.json();
+            newInv(json);
+
+            res.redirect(`${URL}create`);    
+ 
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    updateSession(req, 'message', {text: 'Nauja sąskaita sugeneruota', type: 'succes'});
+    getData();
+
+});
+
+app.get('/create', (req, res) => { 
+
+    let invclistData = fs.readFileSync('./data/inv-list.json', 'utf8');
     invclistData = JSON.parse(invclistData);
 
     const data = {
-        pageTitle: 'pagr puslapio virsus',
+        pageTitle: 'Nauja sąskaita',
         invclistData,
-    }
-});
-
-// app.post('/admin/top', (req, res) => {
-
-//     const {part3, part1, part2 } = req.body;
-
-//     //will be validated later
-//     let invclistData = {
-//         part3,
-//         part1,
-//         part2,
-//     };
-//     console.log(part3)
-
-//     invclistData = JSON.stringify(invclistData);
-//     fs.writeFileSync('./data/inv-list.json', invclistData);
-
-// updateSession(req, 'message', {text: 'puslapis atnaujintas', type: succes});
-
-//     res.redirect(URL + 'admin/top');
-
-// });
-
-
-   
-
-app.post('/top', (req, res) => {
-
-    const {part1} = req.body;
-    //will be validate later
-
-    let invclistData = {
-        part1,
+        URL,
+        message: req.user.message || null
+        
     };
     
-    invclistData = JSON.stringify(invclistData);
-    fs.writeFileSync('./data/inv-list.json', invclistData);
-    res.redirect('URL + admin/top');
+    const html = makeHtml(data, 'create');
+    
+    res.send(html);
+});
+
+// STORE 
+
+app.get('/save', (req, res) => {
+
+    let invclistData = fs.readFileSync('./data/inv-list.json', 'utf8');
+    invclistData = JSON.parse(invclistData);
+
+
+
+    addItem(invclistData);
+
+    updateSession(req, 'message', {text: 'Sąskaita išsaugota', type: 'succes'});
+
+    res.redirect(`${URL}list`);
+
 
 });
 
-app.get('/', (req, res) => {
+//READ
 
-    invclistData = fs.readFileSync('./data/inv-list.json', 'utf8');
-    invclistData = JSON.parse(invclistData);
+app.get('/read/:number', (req, res) => {
+    let invoices = fs.readFileSync('./data/invoices.json', 'utf8');
+    invoices = JSON.parse(invoices);
+
+    const invclistData = invoices.items.find(invoisas => invoisas.number === req.params.number);
+    
 
     const data = {
-        pageTitle: 'Pagrindinis puslapis',
-        invclistData
+        pageTitle: 'Sąskaitos peržiūra',
+        invclistData,
+        URL,
+        
     };
-    const html = makeHtml(data, 'main', false);
+    
+    const html = makeHtml(data, 'read');
+
+    // updateSession(req, 'message', {text: 'Sąskaita peržiūrima', type: 'succes'});
 
     res.send(html);
 });
 
-/// Invoice 
 
+ // DELETE
 
-// fetch('https://in3.dev/inv/')
-//     .then(response => response.json())
-//     .then(data => {
-//         const invoiceData = data;
+ app.get('/delete/:number', (req, res) => {
+    let invoice = fs.readFileSync('./data/invoices.json', 'utf8');
+    invoice = JSON.parse(invoice);
 
-
-//         document.getElementById('invoice-number').textContent = data.number;
-//         document.getElementById('invoice-date').textContent = data.date;
-//         document.getElementById('invoice-due-date').textContent = data.due_date;
-
-
-//         document.getElementById('seller-name').textContent = data.company.seller.name;
-//         document.getElementById('seller-address').textContent = data.company.seller.address;
-//         document.getElementById('seller-code').textContent = data.company.seller.code;
-//         document.getElementById('seller-vat').textContent = data.company.seller.vat;
-//         document.getElementById('seller-phone').textContent = data.company.seller.phone;
-//         document.getElementById('seller-email').textContent = data.company.seller.email;
-
-
-//         document.getElementById('buyer-name').textContent = data.company.buyer.name;
-//         document.getElementById('buyer-address').textContent = data.company.buyer.address;
-//         document.getElementById('buyer-code').textContent = data.company.buyer.code;
-//         document.getElementById('buyer-vat').textContent = data.company.buyer.vat;
-//         document.getElementById('buyer-phone').textContent = data.company.buyer.phone;
-//         document.getElementById('buyer-email').textContent = data.company.buyer.email;
-
-
-//         const tbody = document.querySelector('table tbody');
-//         let subtotal = 0;
-
-//         data.items.forEach(item => {
-//             const discountedPrice = calculateDiscountedPrice(item);
-//             subtotal += discountedPrice;
-
-//             const row = document.createElement('tr');
-//             row.innerHTML = `
-//                         <td>${item.description}</td>
-//                         <td>${item.quantity}</td>
-//                         <td>${item.price.toFixed(2)} €</td>
-//                         <td>${item.discount && item.discount.value ? (item.discount.type === 'fixed'
-//                     ? `-${(item.discount.value * item.quantity).toFixed(2)} €`
-//                     : `-${((item.price * item.discount.value / 100) * item.quantity).toFixed(2)} € (-${item.discount.value}%)`) : '-'}</td>
-//                         <td>${discountedPrice.toFixed(2)} €</td> `;
-//             tbody.appendChild(row);
-//         });
-
-
-//         const vat = subtotal * 0.21;
-//         const total = subtotal + vat + data.shippingPrice;
-
-//         document.getElementById('shipping-price').textContent = `${data.shippingPrice.toFixed(2)} €`;
-//         document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)} €`;
-//         document.getElementById('vat').textContent = `${vat.toFixed(2)} €`;
-//         document.getElementById('total').textContent = `${total.toFixed(2)} €`;
-//     })
-
-
-// function calculateDiscountedPrice(item) {
-//     if (item.discount && item.discount.type === "fixed") {
-//         return (item.price - item.discount.value) * item.quantity;
-//     } else if (item.discount && item.discount.type === "percentage") {
-//         const discount = item.price * (item.discount.value / 100);
-//         return (item.price - discount) * item.quantity;
-//     }
-//     return item.price * item.quantity;
-// }
+    const invclistData = invoice.items.find(invclistData => invclistData.number === req.params.number);
 
 
 
+    const data = {
+        pageTitle: invclistData.number + ' sąskaitos trynimas',
+        invclistData,
+        URL,
+    };
+
+    const html = makeHtml(data, 'delete');
+
+    res.send(html);
+});
+
+app.get('/destroy/:number', (req, res) => {
+    let invclistData = fs.readFileSync('./data/invoices.json', 'utf8');
+    invclistData = JSON.parse(invclistData);
+
+    let fileContent = {};
+
+
+    const invoice = invclistData.items.find(invoice => invoice.number === req.params.number);
+
+    const filteredInvoice = invclistData.items.filter((inv) => inv !== invoice);
+
+    fileContent.items = filteredInvoice;
+    fs.writeFileSync('./data/invoices.json', JSON.stringify(fileContent), 'utf8');
+
+    updateSession(req, 'message', {text: 'Sąskaita ištrinta', type: 'succes'});
+
+    res.redirect(`${URL}list`);
+});
+
+
+// EDIT
+
+
+app.get('/edit/:number', (req, res) => {
+    let invoices = fs.readFileSync('./data/invoices.json', 'utf8');
+    invoices = JSON.parse(invoices);
+
+    const invclistData = invoices.items.find(invclistData => invclistData.number === req.params.number);
+    invclistData.items.map(item => {
+        if (item.discount.P) {
+            item.discount.P = item.discount.P.slice(2, -2)
+        }
+    });
+
+    
+
+    const data = {
+        pageTitle: invclistData.number + ' sąskaitos redagavimas',
+        invclistData,
+        URL,
+
+    };
+
+    const html = makeHtml(data, 'edit');
+
+    res.send(html);
+
+});
+
+app.post('/update/:id', (req, res) => {
+    try {
+        
+        let invoices = fs.readFileSync('./data/invoices.json', 'utf8');
+        invoices = JSON.parse(invoices);
+
+        const id = req.params.id;
+        const invclistData = invoices.items.find(invclistData => invclistData.number === id);
+
+        if (!invclistData) {
+            return res.status(404).send("Sąskaita nerasta.");
+        }
+
+        let { quantity, discount_eur, discount_p } = req.body;
+
+        
+        quantity = quantity.map(qty => parseInt(qty) || 0);
+        discount_eur = discount_eur.map(d => parseFloat(d) || 0);
+        discount_p = discount_p.map(d => parseFloat(d) || 0);
+
+        invclistData.items.forEach((item, i) => {
+            item.quantity = quantity[i];
+
+           
+            if (discount_eur[i] === 0 && discount_p[i] !== 0) {
+                item.discount.Eur = (item.price * item.quantity) * (discount_p[i] / 100);
+            } else {
+                item.discount.Eur = discount_eur[i];
+            }
+
+          
+            if (item.discount.Eur !== 0 && discount_p[i] === 0) {
+                item.discount.P = (item.discount.Eur * 100) / (item.price * item.quantity);
+            } else {
+                item.discount.P = discount_p[i];
+            }
+        });
+
+        
+        updateSession(req, 'message', { text: 'Pakeista sąskaita išsaugota', type: 'success' });
+
+        
+        editedInv(invclistData);
+
+      
+        fs.writeFileSync('./data/invoices.json', JSON.stringify(invoices, null, 2), 'utf8');
+        res.redirect(URL + 'edit/' + id);
+    } catch (err) {
+        console.error("Klaida atnaujinant sąskaitą:", err);
+        res.status(500).send("Nepavyko atnaujinti sąskaitos.");
+    }
+});
 
 
 

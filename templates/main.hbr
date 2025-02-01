@@ -2,12 +2,12 @@
 <main>
     <section class="buttons">
         <div class="buttons-bin">
-            
+            <h1> Invoice Generator {{invclistData.part3}}</h1>
         <nav>
             <ul>
-                <li><a href="{{URL}}invnew"> sugeneruoti naują sąskaitą </a></li>
-                <li><a href="{{URL}}invlist">saskaitų sarašas</a></li>
-                <li><a href="{{URL}}refresh"> atnaujinti</a></li>
+                <li><a href="{{URL}}new"> sugeneruoti naują sąskaitą </a></li>
+                <li><a href="{{URL}}list">saskaitų sarašas</a></li>
+                <li><a href="http://localhost:3000/"> atnaujinti</a></li>
             </ul>
         </nav>
         </div>

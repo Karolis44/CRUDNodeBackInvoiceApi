@@ -1,17 +1,31 @@
 <main>
 <section class="buttons">
-    <section class="list-bin">
+    <section class="buttons-bin">
 
-        <h1>Sąskaitų sąrašas</h1>
+        <h1 style="font-size: 32px;">Sąskaitų sąrašas</h1>
 
+       {{#each invclistData.items}}
+                <div><b>{{number}}</b></div>
+                <div><b>{{date}}</b></div>
+                <div><b>{{grandTotal}} Eur</b></div>
 
-      
-        <div>{{invclistData.part1}}</div>
-        <div>{{invclistData.part2}}</div>
-        <div>{{invclistData.part3}}</div>
-
+      <div class="print-button">
+    
+        <a href="{{URL}}read/{{number}}"><button>Peržiūrėti</button></a>
+        <a href="{{URL}}edit/{{number}}"><button>Redaguoti</button></a>
+        <a href="{{URL}}delete/{{number}}"><button>ištrinti</button></a>
+        
+    
+          </div>                  
 
             </section>
+            
         </section>
+        {{/each}}
+
+        <div class="print-button">
+            <a href="http://localhost:3000/"><button>Grįžti į pagrindinį</button></a>
+            <a href="{{URL}}new"> <button>sugeneruoti naują sąskaitą </button></a>
+            </div>
 
 </main>

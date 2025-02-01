@@ -1,4 +1,76 @@
+<main>
+    <div class='invoice-container'>
+        <div class='header'>
+            <h1>PVM SĄSKAITA FAKTŪRA</h1>
+            <p>Serija ir numeris: <strong id='invoice-number'>{{invclistData.number}}</strong></p>
+            <p>Sąskaitos data: <span id='invoice-date'>{{invclistData.date}}</span></p>
+            <p>Apmokėti iki: <span id='invoice-due-date'>{{invclistData.due_date}}</span></p>
+        </div>
+        <div class='details'>
+            <div class='section'>
+                <h3>Pardavėjas</h3>
+                <p id='seller-name'>{{invclistData.company.seller.name}}</p>
+                <p id='seller-address'>{{invclistData.company.seller.address}}</p>
+                <p id='seller-code'>{{invclistData.company.seller.code}}</p>
+                <p id='seller-vat'>{{invclistData.company.seller.va}}</p>
+                <p id='seller-phone'>{{invclistData.company.seller.phone}}</p>
+                <p id='seller-email'>{{invclistData.company.seller.email}}</p>
+            </div>
+            <div class='section'>
+                <h3>Pirkėjas</h3>
+                <p id='buyer-name'>{{invclistData.company.buyer.name}}</p>
+                <p id='buyer-address'>{{invclistData.company.buyer.address}}</p>
+                <p id='buyer-code'>{{invclistData.company.buyer.code}}</p>
+                <p id='buyer-vat'>{{invclistData.company.buyer.vat}}</p>
+                <p id='buyer-phone'>{{invclistData.company.buyer.phone}}</p>
+                <p id='buyer-email'>{{invclistData.company.buyer.email}}</p>
+            </div>
+        </div>
+
+        <table>
+    <thead>
+        <tr>
+            <th>Prekės aprašymas</th>
+            <th>Kiekis</th>
+            <th>Vieneto kaina</th>
+            <th>Nuolaida</th>
+            <th>Suma</th>
+        </tr>
+    </thead>
+    <tbody>
+        <form action="{{URL}}update/{{invclistData.number}}" method="post">
+        {{#each invclistData.items}}
+        <tr class="item" data-item>
+            <td class="item-name">{{this.description}}</td>
+            <td class="price" data-item-price>{{this.price}}</td>
+            <td class="quantity"><input type="number" name="quantity" class="edit-qty" value="{{this.quantity}}" data-item-qty /></td>
+            <td class="discount">
+                <input type="text" name="discount_eur" class="edit-disc" value="{{this.discount.Eur}}" data-item-discount-eur /> EUR
+                <input type="text" name="discount_p" class="edit-disc" value="{{this.discount.P}}" data-item-discount-p /> %
+            </td>
+            <td class="total-item" data-item-discounted-total>{{this.itemDiscountedTotal}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+            <div class="totals">
+                <div data-sum class="data-sum"></div>
+                <div>Tarpinė suma: <b><span data-pre-total>{{invclistData.subTotal}}</span> EUR</b></div>
+                <div>Siuntimo išlaidos: <b><span data-shipping-price>{{invclistData.shippingPrice}}</span> EUR</b></div>
+                <div>PVM (21%): <b><span data-vat>{{invclistData.vat}}</span> EUR</b></div>
+                <div>Visos nuolaidos: <b><span data-total-discounts>{{invclistData.totalDiscounts}}</span> EUR</b></div>
+                <div class="data-total">Galutinė suma: <b><span data-total-final>{{invclistData.grandTotal}}</span> EUR </b></div>
+            </div>
+
+        
+    </section>
+    <div class="print-button">
+        <button type="submit"><span class="text">Išsaugoti</span></button>
+        </form>
+        <a href="{{URL}}list"><button><span class="text">Grįžti į sarašą</span></button></a>
 
 
-<form action="{{URL}}list/{{invclistData.number}}" method="post">
+    </div>
 
+
+</main>

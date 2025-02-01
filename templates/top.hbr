@@ -14,30 +14,22 @@
 <body>
 
     <header>
-{{#if message}}
-        <div class="alert-container" data-msg>
-                <div class="alert alert-{{message.type}}" role="alert">
-                    {{message.text}}
+   {{#if message}}
+    <div ; style="text-align: center;" class="container mt-5" data-msg>
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-4" >
+                <div style="font-size:xx-large"  class="alert alert-{{message.type}}" role="alert">
+                   {{message.text}}
                 </div>
+            </div>
+            <div class="col-4"></div>
         </div>
- {{/if}}
-
-       <section class="buttons">
-        <h1> Invoice Generator {{invclistData.part3}}</h1>
-
-        
-         
+    </div>
+    {{/if}}
     
-         </section>
-         
-        {{!-- <form action="{{URL}} admin/top" method="post">
+
        
-            
-            <input type="text" value="{{invclistData.part1}}">
-            <textarea class="control" name="pagetext" rows="10">{{invclistData.part2}}</textarea>
-            <button type="submit" class="btnbtn">save</button>
-   
-    </form> --}}
 
 
     </header>

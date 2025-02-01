@@ -1,0 +1,17 @@
+
+<main>
+    
+        <div class="invoice-container">
+            
+            <h2>Ar tikrai norite ištrinti <b>{{invclistData.number}}</b> sąskaitą?</h2>
+
+
+            <div class="print-button">
+                <a href="{{URL}}destroy/{{invclistData.number}}"><button><span class="text">Ištrinti</span></button></a>
+                <a href="{{URL}}list"><button><span class="text">Atšaukti</span></button></a>
+
+            </div>
+
+        </div>
+    
+</main>

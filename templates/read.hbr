@@ -26,7 +26,7 @@
                 <p id='buyer-email'>{{invclistData.company.buyer.email}}</p>
             </div>
         </div>
-
+        
         <table>
             <thead>
                 <tr>
@@ -54,12 +54,9 @@
             <p>Galutinė suma su PVM: <strong id='total'>{{invclistData.grandTotal}}€</strong></p>
         </div>
     </div>
-    <section class='print-button'>
-        <section>
-        <a href="{{URL}}new"><button>Nauja sąskaita</button></a>
-        <a href="{{URL}}save"><button>Išsaugoti</button></a>
-        <button onclick='window.print()'>Spausdinti</button>
-        <a href="http://localhost:3000/"><button>Grįžti į pagrindinį</button></a>
-    </section>
-</section>
+    <div class="print-button">
+        <a href="{{URL}}list"><button>Grįžti atgal</button></a>
+       
+    </div>
+
 </main>
