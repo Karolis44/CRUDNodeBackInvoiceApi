@@ -2,7 +2,7 @@
 <main>
     <section class="buttons">
         <div class="buttons-bin">
-            <h1> Invoice Generator {{invclistData.part3}}</h1>
+            <h1> Sąskaitų tvarkyklė {{invclistData.part3}}</h1>
         <nav>
             <ul>
                 <li><a href="{{URL}}new"> sugeneruoti naują sąskaitą </a></li>
