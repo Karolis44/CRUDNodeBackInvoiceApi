@@ -31,8 +31,8 @@
     <thead>
         <tr>
             <th>Prekės aprašymas</th>
-            <th>Kiekis</th>
             <th>Vieneto kaina</th>
+            <th>Kiekis</th>
             <th>Nuolaida</th>
             <th>Suma</th>
         </tr>
