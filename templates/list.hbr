@@ -3,7 +3,7 @@
     <section class="buttons-bin">
 
         <h1 style="font-size: 32px;">Sąskaitų sąrašas</h1>
-
+<div class="list">
        {{#each invclistData.items}}
                 <div><b>{{number}}</b></div>
                 <div><b>{{date}}</b></div>
@@ -23,9 +23,9 @@
         </section>
         {{/each}}
 
-        <div class="print-button">
-            <a href="http://localhost:3000/"><button>Grįžti į pagrindinį</button></a>
+        <div class="print-button">     
             <a href="{{URL}}new"> <button>sugeneruoti naują sąskaitą </button></a>
+            <a href="http://localhost:3000/"><button>Grįžti į pagrindinį</button></a>
             </div>
-
+</div>
 </main>

@@ -2,28 +2,28 @@
     <div class='invoice-container'>
         <div class='header'>
             <h1>PVM SĄSKAITA FAKTŪRA</h1>
-            <p>Serija ir numeris: <strong id='invoice-number'>{{invclistData.number}}</strong></p>
-            <p>Sąskaitos data: <span id='invoice-date'>{{invclistData.date}}</span></p>
-            <p>Apmokėti iki: <span id='invoice-due-date'>{{invclistData.due_date}}</span></p>
+               <p>Serija ir numeris: <strong data-serial-number>{{invclistData.number}}</strong></p>
+            <p>Sąskaitos data: <span data-date>{{invclistData.date}}</span></p>
+            <p>Apmokėti iki: <span data-due-date>{{invclistData.due_date}}</span></p>
         </div>
         <div class='details'>
             <div class='section'>
                 <h3>Pardavėjas</h3>
-                <p id='seller-name'>{{invclistData.company.seller.name}}</p>
-                <p id='seller-address'>{{invclistData.company.seller.address}}</p>
-                <p id='seller-code'>{{invclistData.company.seller.code}}</p>
-                <p id='seller-vat'>{{invclistData.company.seller.va}}</p>
-                <p id='seller-phone'>{{invclistData.company.seller.phone}}</p>
-                <p id='seller-email'>{{invclistData.company.seller.email}}</p>
+                <p data-seller-name>{{invclistData.company.seller.name}}</p>
+                <p data-seller-address>{{invclistData.company.seller.address}}</p>
+                <p data-seller-code>{{invclistData.company.seller.code}}</p>
+                <p data-seller-VAT>{{invclistData.company.seller.va}}</p>
+                <p data-seller-phone>{{invclistData.company.seller.phone}}</p>
+                <p data-seller-email>{{invclistData.company.seller.email}}</p>
             </div>
             <div class='section'>
                 <h3>Pirkėjas</h3>
-                <p id='buyer-name'>{{invclistData.company.buyer.name}}</p>
-                <p id='buyer-address'>{{invclistData.company.buyer.address}}</p>
-                <p id='buyer-code'>{{invclistData.company.buyer.code}}</p>
-                <p id='buyer-vat'>{{invclistData.company.buyer.vat}}</p>
-                <p id='buyer-phone'>{{invclistData.company.buyer.phone}}</p>
-                <p id='buyer-email'>{{invclistData.company.buyer.email}}</p>
+                <p data-buyer-name>{{invclistData.company.buyer.name}}</p>
+                <p data-buyer-address>{{invclistData.company.buyer.address}}</p>
+                <p data-buyer-code>{{invclistData.company.buyer.code}}</p>
+                <p data-buyer-VAT>{{invclistData.company.buyer.vat}}</p>
+                <p data-buyer-phone>{{invclistData.company.buyer.phone}}</p>
+                <p data-buyer-email>{{invclistData.company.buyer.email}}</p>
             </div>
         </div>
         
@@ -48,10 +48,10 @@
             {{/each}}
         </table>
         <div class='totals'>
-            <p>Transportavimo išlaidos: <strong id='shipping-price'>{{invclistData.shippingPrice}}€</strong></p>
-            <p>Prekių suma (be PVM): <strong id='subtotal'>{{invclistData.subTotal}} €</strong></p>
-            <p>PVM 21%: <strong id='vat'>{{invclistData.vat}}€</strong></p>
-            <p>Galutinė suma su PVM: <strong id='total'>{{invclistData.grandTotal}}€</strong></p>
+            <p>Transportavimo išlaidos: <strong data-shipping-price>{{invclistData.shippingPrice}}€</strong></p>
+            <p>Prekių suma (be PVM): <strong data-pre-total>{{invclistData.subTotal}} €</strong></p>
+            <p>PVM 21%: <strong data-vat>{{invclistData.vat}}€</strong></p>
+            <p>Galutinė suma su PVM: <strong data-total-final>{{invclistData.grandTotal}}€</strong></p>
         </div>
     </div>
     <div class="print-button">
